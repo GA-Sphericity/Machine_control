@@ -1,8 +1,9 @@
 """
 Abstract:
 
-This utilizes a JSON movement file to send the movements for an
-arduino to preform.
+This utilizes a JSON movement file to send the movements for anarduino to preform.
+
+Observe that <file> and <port> needs to be replaced with appropriate information.
 """
 
 import time
@@ -11,16 +12,16 @@ import json
 import winsound
 import convert
 
-rule_file = r"" # The movement JSON file to be executed.
+rule_file = r"<file>" # The movement JSON file to be executed.
 
 with open(rule_file, "r") as file:
     jfile = json.loads(file.read())
 
-print("CURRENT FILE:", rule_file)
+print("Current file:", rule_file)
 
 total_steps = 0
-multi = 1
 rules = list()
+step_ms = 3 * 0.001 # The amount of time for a stepper motor to make a step in seconds
 
 cube_sides = float(input("cube side size: "))
 stepper_length = 0.01935 # The length one stepper motor moves in linear motion from 1 step.
@@ -48,12 +49,10 @@ for i in rules:
     total_steps += abs(i['x']) + abs(i['y'])
 
 exchangeXandY = False
-step_ms = 3 * 0.001 # The amount of time to move one step in milliseconds
-
-print("Print time:", step_ms * total_steps, "s") # An estimation of the total runtime for all the movements to preform. 
-
-port = "COM3" # The port the arduino is connected to.
+port = "<port>" # The port the arduino is connected to.
 arduino = serial.Serial(port, 9600) # The bitrate is 9600 baud (bits / sec). Each character is 10 bits (960 chars / sec).
+
+print("Move time:", step_ms * total_steps, "s") # An estimation of the total runtime for all the movements to preform. 
 
 def move(x, y):
     """
@@ -65,6 +64,9 @@ def move(x, y):
 
 
 def main():
+    """
+    
+    """
 
     count = 0
     for i in rules:
@@ -74,12 +76,14 @@ def main():
         else:
             move(i["y"], i["x"])
 
-        time_cal = (abs(i["x"]) + abs(i["y"])) * step_ms
+        time_cal = (abs(i["x"]) + abs(i["y"])) * step_ms # Estimates the times it takes to make the currenct movement. 
+        
         count += 1
-        print("Sleep:", time_cal, str(round((count / len(rules)) * 100, 2)) + "%")
-        time.sleep(time_cal)
+        print("Estimated delay:", time_cal, str(round((count / len(rules)) * 100, 2)) + "%")
+        time.sleep(time_cal) # Delays the program to allow the stepper motors to perform the current movement.
 
 
+# Countdown before starting executing movements.
 for i in range(5, 0, -1):
     print(i)
     time.sleep(1)
@@ -90,9 +94,7 @@ print("-" * 20)
 main()
 print("\a") # Creates a sound to alert that the movements are completed. 
 
-
-# Move back to start location
-await_input = input("Press enter to return to start position")
+await_input = input("Press enter to return to start position") # This is to await user input
 
 return_back_movement = position[-1]
 move(return_back_movement['x'] * -1, return_back_movement['y'] * -1)

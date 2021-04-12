@@ -7,7 +7,7 @@ OBS: Max input is 32767, otherwise overflow error because int(16) max value = 32
 #include <Stepper.h>
 
 /*
- * 
+ * The connections from the arduino to the induvidual stop motor driverboards.
  * 
  * Step motor driver 1  |   Arduino Uno
  *         IN1                  2
@@ -31,11 +31,7 @@ Stepper StepY(STEPS, 7, 9, 8, 10);
 char rx_byte = 0;
 String rx_str = "";
 
-void setup() {
-	/*
-	
-	*/
-	
+void setup() {	
   // Rotations per minute => (1 rotation / min) / (2048 steps * 10 rotations) = 0.0029296872 sec / step => ~3 ms / step
 
   StepX.setSpeed(10);
@@ -45,6 +41,7 @@ void setup() {
 }
 
 void move(int x, int y){
+  // Send the movement instructions to the step motors driverboards.
 
   StepX.step(x);
   StepY.step(y);
@@ -52,7 +49,8 @@ void move(int x, int y){
 }
 
 String split_string(String data, int point){
-  // Splits the string the arduino gets from the computer into int, if point is 0 = x value, 1 = y value.
+  // Splits the string the arduino gets from the computer into int.
+  // Point variable indicates which axies is being requested, 0 = x value, 1 = y.
 
   char separator = ':';
 
@@ -66,10 +64,7 @@ String split_string(String data, int point){
 }
 
 void loop() {
-	/*
-	
-	
-	*/
+  // Gathers the instruction from the computer to parse and send to step motor driverboards. 
 
   if (Serial.available() > 0){
 

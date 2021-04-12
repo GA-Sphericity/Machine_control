@@ -1,51 +1,31 @@
 """
-Gets movements from a JSON file and execute them.
+Abstract:
 
-JSON 
+This utilizes a JSON movement file to send the movements for an
+arduino to preform.
 """
-
 
 import time
 import serial
 import json
 import winsound
-
 import convert
 
-rule_file = r"C:\Users\Ingvar Pétursson\Documents\Data\År 3\GA\Rörelsemönster\rörelsemönster\ptwo\ptwo_4.json"
+rule_file = r"" # The movement JSON file to be executed.
 
 with open(rule_file, "r") as file:
     jfile = json.loads(file.read())
 
 print("CURRENT FILE:", rule_file)
 
-"""
-repeat = 1
-if "repeat" in jfile.keys():
-    pattern_repeat = jfile['repeat']
-    if pattern_repeat != 0:
-        repeat = pattern_repeat
-"""
-
 total_steps = 0
 multi = 1
 rules = list()
-"""
-for i in range(0, repeat):
-    for i in jfile['movement']:
-        x = round(multi * i['x'])
-        y = round(multi * i['y'])
-        rules.append( {"x":x, "y":y} )
-"""
 
 cube_sides = float(input("cube side size: "))
-stepper_length = 0.01935 #
-
-print(jfile['movement'][0:10])
+stepper_length = 0.01935 # The length one stepper motor moves in linear motion from 1 step.
 
 rules, position = convert.convert(jfile['movement'], jfile['position'], cube_sides, 1, stepper_length)
-
-print(rules)
 
 all_x = list()
 all_y = list()
@@ -70,13 +50,15 @@ for i in rules:
 exchangeXandY = False
 step_ms = 3 * 0.001 # The amount of time to move one step in milliseconds
 
-print("Print time:", step_ms * total_steps, "s")
+print("Print time:", step_ms * total_steps, "s") # An estimation of the total runtime for all the movements to preform. 
 
-port = "COM3" # The port the arduino is connected to
-arduino = serial.Serial(port, 9600) # 9600 bits / sec => Arduino char = 10 bits => 960 chars / sec
+port = "COM3" # The port the arduino is connected to.
+arduino = serial.Serial(port, 9600) # The bitrate is 9600 baud (bits / sec). Each character is 10 bits (960 chars / sec).
 
 def move(x, y):
-    # Moves the machine x and y steps.
+    """
+    Sends the x and y values to the arduino to 
+    """
     data = str(x) + ":" + str(y) + "\n"
     arduino.write(data.encode())
     print(data)
@@ -98,20 +80,18 @@ def main():
         time.sleep(time_cal)
 
 
-
-
 for i in range(5, 0, -1):
     print(i)
     time.sleep(1)
+    
 print("START:")
 print("-" * 20)
 
 main()
-print("\a")
+print("\a") # Creates a sound to alert that the movements are completed. 
 
 
 # Move back to start location
-
 await_input = input("Press enter to return to start position")
 
 return_back_movement = position[-1]

@@ -1,8 +1,14 @@
+/*
+ABSTRACT:
+
+OBS: Max input is 32767, otherwise overflow error because int(16) max value = 32767.
+*/
+
 #include <Stepper.h>
 
-// OBS: Max input is 32767, otherwise overflow error (?, correct wording?) because int(16) max value = 32767.
-
 /*
+ * 
+ * 
  * Step motor driver 1  |   Arduino Uno
  *         IN1                  2
  *         IN2                  4
@@ -15,11 +21,6 @@
  *         IN3                  9              ~
  *         IN4                  10             ~
  *         
- * Power
- * Step motor driver 1:
- *  Power supply 1.
- * Step motor driver 2: 
- *  Power supply 2.
 */
 
 #define STEPS 2048
@@ -31,9 +32,12 @@ char rx_byte = 0;
 String rx_str = "";
 
 void setup() {
-  // put your setup code here, to run once:
-
+	/*
+	
+	*/
+	
   // Rotations per minute => (1 rotation / min) / (2048 steps * 10 rotations) = 0.0029296872 sec / step => ~3 ms / step
+
   StepX.setSpeed(10);
   StepY.setSpeed(10);
 
@@ -62,7 +66,10 @@ String split_string(String data, int point){
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+	/*
+	
+	
+	*/
 
   if (Serial.available() > 0){
 
@@ -79,8 +86,6 @@ void loop() {
       rx_str = "";
 
       String returnText = "x: " + String(x) + " y: " + String(y);
-
-      // Serial.println(returnText);
 
       move(x, y);
     }
